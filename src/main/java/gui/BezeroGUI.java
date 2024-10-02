@@ -18,7 +18,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
-import businessLogic.BLFacade;
+import businesslogic.BLFacade;
 import domain.Booking;
 import domain.Complaint;
 import domain.Driver;
@@ -51,7 +51,7 @@ public class BezeroGUI extends JFrame {
 
 		// Lista
 		taula = new JTable();
-		List<Booking> TravelsList = appFacadeInterface.getBookingFromDriver(username);
+		List<Booking> travelsList = appFacadeInterface.getBookingFromDriver(username);
 		List<Booking> BezeroLista = new ArrayList<>();
 
 		scrollPane = new JScrollPane(taula);
@@ -66,8 +66,8 @@ public class BezeroGUI extends JFrame {
 		DefaultTableModel model = new DefaultTableModel(columnNames, 0);
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 
-		if (TravelsList != null) {
-			for (Booking bo : TravelsList) {
+		if (travelsList != null) {
+			for (Booking bo : travelsList) {
 				
 				String status;
 				switch (bo.getStatus()) {

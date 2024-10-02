@@ -1,6 +1,6 @@
 package gui;
 
-import businessLogic.BLFacade;
+import businesslogic.BLFacade;
 import configuration.UtilDate;
 
 import com.toedter.calendar.JCalendar;

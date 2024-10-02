@@ -13,7 +13,7 @@ import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import businessLogic.BLFacade;
+import businesslogic.BLFacade;
 import configuration.UtilDate;
 import domain.Car;
 import domain.Driver;
@@ -226,13 +226,11 @@ public class CreateRideGUI extends JFrame {
 						UtilDate.trim(jCalendar.getDate()), inputSeats, price, driver.getUsername());
 				jLabelMsg.setText(ResourceBundle.getBundle("Etiquetas").getString("CreateRideGUI.RideCreated"));
 
-			} catch (RideMustBeLaterThanTodayException e1) {
-				jLabelMsg.setText(e1.getMessage());
-			} catch (RideAlreadyExistException e1) {
+			} catch (RideMustBeLaterThanTodayException | RideAlreadyExistException e1) {
 				jLabelMsg.setText(e1.getMessage());
 			}
 
-	}
+    }
 
 	private void jButtonClose_actionPerformed(ActionEvent e) {
 		this.setVisible(false);

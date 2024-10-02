@@ -1,6 +1,9 @@
 package dataAccess;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -8,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -31,26 +35,29 @@ public class DataAccess {
 	
 	private String adminPass="admin";
 
+	private static final String DRIVER_QUERY = "SELECT d FROM Driver d WHERE d.username = :username";
+
+	Logger logger = Logger.getLogger(getClass().getName());
+
 	public DataAccess() {
 		if (c.isDatabaseInitialized()) {
 			String fileName = c.getDbFilename();
 
-			File fileToDelete = new File(fileName);
-			if (fileToDelete.delete()) {
-				File fileToDeleteTemp = new File(fileName + "$");
-				fileToDeleteTemp.delete();
-
-				System.out.println("File deleted");
-			} else {
-				System.out.println("Operation failed");
+			try{
+				Files.delete(Paths.get(fileName));
+				Files.delete(Paths.get(fileName + "$"));
+				logger.info("File deleted");
+			} catch (IOException e) {
+				logger.info("Operation failed");
 			}
+
 		}
 		open();
 		if (c.isDatabaseInitialized()) {
 			initializeDB();
 		}
 
-		System.out.println("DataAccess created => isDatabaseLocal: " + c.isDatabaseLocal() + " isDatabaseInitialized: "
+		logger.info("DataAccess created => isDatabaseLocal: " + c.isDatabaseLocal() + " isDatabaseInitialized: "
 				+ c.isDatabaseInitialized());
 
 		close();
@@ -174,7 +181,7 @@ public class DataAccess {
 			db.persist(dis);
 
 			db.getTransaction().commit();
-			System.out.println("Db initialized");
+			logger.info("Db initialized");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -226,12 +233,12 @@ public class DataAccess {
 	 */
 	public Ride createRide(String from, String to, Date date, int nPlaces, float price, String driverName)
 			throws RideAlreadyExistException, RideMustBeLaterThanTodayException {
-		System.out.println(
+		logger.info(
 				">> DataAccess: createRide=> from= " + from + " to= " + to + " driver=" + driverName + " date " + date);
 		if (driverName==null) return null;
 		try {
 			if (new Date().compareTo(date) > 0) {
-				System.out.println("ppppp");
+				logger.info("ppppp");
 				throw new RideMustBeLaterThanTodayException(
 						ResourceBundle.getBundle("Etiquetas").getString("CreateRideGUI.ErrorRideMustBeLaterThanToday"));
 			}
@@ -266,7 +273,7 @@ public class DataAccess {
 	 * @return collection of rides
 	 */
 	public List<Ride> getRides(String from, String to, Date date) {
-		System.out.println(">> DataAccess: getActiveRides=> from= " + from + " to= " + to + " date " + date);
+		logger.info(">> DataAccess: getActiveRides=> from= " + from + " to= " + to + " date " + date);
 
 		List<Ride> res = new ArrayList<>();
 		TypedQuery<Ride> query = db.createQuery(
@@ -291,7 +298,7 @@ public class DataAccess {
 	 * @return collection of rides
 	 */
 	public List<Date> getThisMonthDatesWithRides(String from, String to, Date date) {
-		System.out.println(">> DataAccess: getThisMonthActiveRideDates");
+		logger.info(">> DataAccess: getThisMonthActiveRideDates");
 
 		List<Date> res = new ArrayList<>();
 
@@ -327,13 +334,13 @@ public class DataAccess {
 					"objectdb://" + c.getDatabaseNode() + ":" + c.getDatabasePort() + "/" + fileName, properties);
 			db = emf.createEntityManager();
 		}
-		System.out.println("DataAccess opened => isDatabaseLocal: " + c.isDatabaseLocal());
+		logger.info("DataAccess opened => isDatabaseLocal: " + c.isDatabaseLocal());
 
 	}
 
 	public void close() {
 		db.close();
-		System.out.println("DataAcess closed");
+		logger.info("DataAcess closed");
 	}
 
 	public User getUser(String erab) {
@@ -378,7 +385,7 @@ public class DataAccess {
 	}
 
 	public Driver getDriver(String erab) {
-		TypedQuery<Driver> query = db.createQuery("SELECT d FROM Driver d WHERE d.username = :username", Driver.class);
+		TypedQuery<Driver> query = db.createQuery(DRIVER_QUERY, Driver.class);
 		query.setParameter("username", erab);
 		List<Driver> resultList = query.getResultList();
 		if (resultList.isEmpty()) {
@@ -624,7 +631,7 @@ public class DataAccess {
 	public List<Booking> getBookingFromDriver(String username) {
 		try {
 			db.getTransaction().begin();
-			TypedQuery<Driver> query = db.createQuery("SELECT d FROM Driver d WHERE d.username = :username",
+			TypedQuery<Driver> query = db.createQuery(DRIVER_QUERY,
 					Driver.class);
 			query.setParameter("username", username);
 			Driver driver = query.getSingleResult();
@@ -683,7 +690,7 @@ public class DataAccess {
 	public List<Ride> getRidesByDriver(String username) {
 		try {
 			db.getTransaction().begin();
-			TypedQuery<Driver> query = db.createQuery("SELECT d FROM Driver d WHERE d.username = :username",
+			TypedQuery<Driver> query = db.createQuery(DRIVER_QUERY,
 					Driver.class);
 			query.setParameter("username", username);
 			Driver driver = query.getSingleResult();
@@ -850,38 +857,45 @@ public class DataAccess {
 		return query.getResultList();
 	}
 
+	private void deleteDriver(User us)
+	{
+		List<Ride> rl = getRidesByDriver(us.getUsername());
+		if (rl != null) {
+			for (Ride ri : rl) {
+				cancelRide(ri);
+			}
+		}
+		Driver d = getDriver(us.getUsername());
+		List<Car> cl = d.getCars();
+		if (cl != null) {
+			for (int i = cl.size() - 1; i >= 0; i--) {
+				Car ci = cl.get(i);
+				deleteCar(ci);
+			}
+		}
+	}
+
+	public void deleteRider(User us)
+	{
+		List<Booking> lb = getBookedRides(us.getUsername());
+		if (lb != null) {
+			for (Booking li : lb) {
+				li.setStatus("Rejected");
+				li.getRide().setnPlaces(li.getRide().getnPlaces() + li.getSeats());
+			}
+		}
+		List<Alert> la = getAlertsByUsername(us.getUsername());
+		if (la != null) {
+			for (Alert lx : la) {
+				deleteAlert(lx.getAlertNumber());
+			}
+		}
+	}
+
 	public void deleteUser(User us) {
 		try {
-			if (us.getMota().equals("Driver")) {
-				List<Ride> rl = getRidesByDriver(us.getUsername());
-				if (rl != null) {
-					for (Ride ri : rl) {
-						cancelRide(ri);
-					}
-				}
-				Driver d = getDriver(us.getUsername());
-				List<Car> cl = d.getCars();
-				if (cl != null) {
-					for (int i = cl.size() - 1; i >= 0; i--) {
-						Car ci = cl.get(i);
-						deleteCar(ci);
-					}
-				}
-			} else {
-				List<Booking> lb = getBookedRides(us.getUsername());
-				if (lb != null) {
-					for (Booking li : lb) {
-						li.setStatus("Rejected");
-						li.getRide().setnPlaces(li.getRide().getnPlaces() + li.getSeats());
-					}
-				}
-				List<Alert> la = getAlertsByUsername(us.getUsername());
-				if (la != null) {
-					for (Alert lx : la) {
-						deleteAlert(lx.getAlertNumber());
-					}
-				}
-			}
+			if (us.getMota().equals("Driver")) deleteDriver(us);
+			else deleteRider(us);
 			db.getTransaction().begin();
 			us = db.merge(us);
 			db.remove(us);

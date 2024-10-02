@@ -1,7 +1,8 @@
-package businessLogic;
+package businesslogic;
 
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;
@@ -11,7 +12,6 @@ import dataAccess.DataAccess;
 import domain.Ride;
 import domain.Traveler;
 import domain.User;
-//import domain.Admin;
 import domain.Alert;
 import domain.Booking;
 import domain.Car;
@@ -28,19 +28,17 @@ import exceptions.RideAlreadyExistException;
 @WebService(endpointInterface = "businessLogic.BLFacade")
 public class BLFacadeImplementation implements BLFacade {
 	DataAccess dbManager;
+	Logger logger = Logger.getLogger(getClass().getName());
 
 	public BLFacadeImplementation() {
-		System.out.println("Creating BLFacadeImplementation instance");
+		logger.info("Creating BLFacadeImplementation instance");
 
 		dbManager = new DataAccess();
-
-		// dbManager.close();
-
 	}
 
 	public BLFacadeImplementation(DataAccess da) {
 
-		System.out.println("Creating BLFacadeImplementation instance with DataAccess parameter");
+		logger.info("Creating BLFacadeImplementation instance with DataAccess parameter");
 		@SuppressWarnings("unused")
 		ConfigXML c = ConfigXML.getInstance();
 
@@ -87,7 +85,7 @@ public class BLFacadeImplementation implements BLFacade {
 		Ride ride = dbManager.createRide(from, to, date, nPlaces, price, driverName);
 		dbManager.close();
 		return ride;
-	};
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -167,14 +165,6 @@ public class BLFacadeImplementation implements BLFacade {
 		dbManager.close();
 		return t;
 	}
-
-	/*@Override
-	public Admin getAdmin(String erab) {
-		dbManager.open();
-		Admin a = dbManager.getAdmin(erab);
-		dbManager.close();
-		return a;
-	}*/
 
 	@Override
 	public String getMotaByUsername(String erab) {
