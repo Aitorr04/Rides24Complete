@@ -524,6 +524,9 @@ public class DataAccess {
 		}
 	}
 
+
+
+
 	public boolean bookRide(String username, Ride ride, int seats, double desk) {
 		try {
 			db.getTransaction().begin();

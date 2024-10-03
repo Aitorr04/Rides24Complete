@@ -130,7 +130,7 @@ public class CreateRideBDWhiteTest {
 		String rideTo="Zarautz";
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-		Date rideDate=null;;
+		Date rideDate=null;
 		
 		boolean driverCreated=false;
 

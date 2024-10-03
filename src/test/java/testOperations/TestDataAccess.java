@@ -9,8 +9,10 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import configuration.ConfigXML;
+import domain.Booking;
 import domain.Driver;
 import domain.Ride;
+import domain.Traveler;
 
 
 public class TestDataAccess {
@@ -119,6 +121,7 @@ public class TestDataAccess {
 			} else 
 			return false;
 		}
+
 		public Ride removeRide(String name, String from, String to, Date date ) {
 			System.out.println(">> TestDataAccess: removeRide");
 			Driver d = db.find(Driver.class, name);
@@ -131,9 +134,34 @@ public class TestDataAccess {
 
 			} else 
 			return null;
-
 		}
 
+		public Ride createTestRide(String driverName, String from, String to, Date date, int nPlaces, float price)
+		{
+			return addDriverWithRide(driverName, from, to, date, nPlaces, price).getCreatedRides().get(0);
+		}
 
-		
+		public Traveler createTestTraveler(String name, int money)
+		{
+			Traveler t = null;
+			db.getTransaction().begin();
+			if (db.find(Traveler.class, name) == null)
+			{
+				t = new Traveler(name, "1234");
+				t.setMoney(money);
+				db.persist(t);
+			}
+			db.getTransaction().commit();
+			return t;
+		}
+
+		public void removeTraveler(Traveler t)
+		{
+			db.getTransaction().begin();
+			if (db.find(Traveler.class, t.getUsername()) != null)
+			{
+				db.remove(db.find(Traveler.class, t.getUsername()));
+			}
+			db.getTransaction().commit();
+		}
 }

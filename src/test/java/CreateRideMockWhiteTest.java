@@ -222,7 +222,7 @@ public class CreateRideMockWhiteTest {
 		String rideTo="Zarautz";
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-		Date rideDate=null;;
+		Date rideDate=null;
 		try {
 			rideDate = sdf.parse("05/10/2026");
 		} catch (ParseException e) {
