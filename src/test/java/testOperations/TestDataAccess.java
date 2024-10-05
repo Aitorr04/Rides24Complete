@@ -164,4 +164,9 @@ public class TestDataAccess {
 			}
 			db.getTransaction().commit();
 		}
+
+		public int getBookingCount()
+		{
+			return  db.createQuery("SELECT b FROM Booking b").getResultList().size();
+		}
 }
