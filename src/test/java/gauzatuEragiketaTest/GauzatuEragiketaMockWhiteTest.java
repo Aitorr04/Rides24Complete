@@ -1,4 +1,4 @@
-package GauzatuEragiketaTest;
+package gauzatuEragiketaTest;
 
 import com.objectdb.o.UserException;
 import dataAccess.DataAccess;
@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 public class GauzatuEragiketaMockWhiteTest
 {
     static DataAccess dataAccess;
-    static User u;
+    static User u1, u2, u3;
     static TypedQuery<User> userQueryMock;
 
     protected MockedStatic<Persistence> persistenceMock;
@@ -52,8 +52,15 @@ public class GauzatuEragiketaMockWhiteTest
         userQueryMock = Mockito.mock(TypedQuery.class);
         Mockito.doReturn(userQueryMock).when(db).createQuery(Mockito.anyString(), Mockito.any());
 
-        u = new User("u1", "123", "Traveler");
-        u.setMoney(30.00);
+        u1 = new User("u1", "1234", "Traveler");
+        u1.setMoney(30.0);
+
+        u2 = new User("u2", "1234", "Traveler");
+        u2.setMoney(22.0);
+
+        u3 = new User("u3", "1234", "Traveler");
+        u3.setMoney(40.0);
+
         dataAccess = new DataAccess(db);
     }
 
@@ -66,40 +73,45 @@ public class GauzatuEragiketaMockWhiteTest
     @Test
     public void test1()
     {
-        Mockito.doReturn(Arrays.asList(t)).when(travelerQueryMock).getResultList();
+        Mockito.doThrow(UserException.class).when(et).begin();
+        Mockito.doThrow(PersistenceException.class).when(et).rollback();
+        Mockito.doReturn(u1).when(userQueryMock).getSingleResult();
 
-        Ride r = new Ride("A", "B", Date.from(Instant.now()), 2, 25, null);
-        Mockito.doThrow(UserException.class).when(et).commit();
-        Mockito.doThrow(RollbackException.class).when(et).rollback();
-
-        assertTrue(dataAccess.bookRide("t1", r, 1, 2.5));
+        try
+        {
+            assertFalse(dataAccess.gauzatuEragiketa("u1",12.04,true));
+        }
+        catch (Exception e)
+        {
+            fail();
+        }
     }
 
     @Test
     public void test2()
     {
-        Mockito.doReturn(new ArrayList<Traveler>()).when(userQueryMock).getResultList();
-        assertFalse(dataAccess.bookRide("t1", new Ride("A", "B", Date.from(Instant.now()), 2, 25, null), 1, 2.5));
+        Mockito.doReturn(u1).when(userQueryMock).getSingleResult();
+        assertTrue(dataAccess.gauzatuEragiketa("u1",12.04,true));
     }
 
     @Test
     public void test3()
     {
-        Mockito.doReturn(Arrays.asList(u)).when(userQueryMock).getResultList();
-        assertFalse(dataAccess.bookRide("t1", new Ride("A", "B", Date.from(Instant.now()), 2, 25, null), 5, 2.5));
+        Mockito.doReturn(u2).when(userQueryMock).getSingleResult();
+        assertTrue(dataAccess.gauzatuEragiketa("u2",32.71,false));
     }
 
     @Test
     public void test4()
     {
-        Mockito.doReturn(Arrays.asList(t)).when(userQueryMock).getResultList();
-        assertFalse(dataAccess.bookRide("t1", new Ride("A", "B", Date.from(Instant.now()), 2, 100, null), 1, 2.5));
+        Mockito.doReturn(u3).when(userQueryMock).getSingleResult();
+        assertTrue(dataAccess.gauzatuEragiketa("u3",25.00,false));
     }
 
     @Test
     public void test5()
     {
-        Mockito.doReturn(Arrays.asList(t)).when(userQueryMock).getResultList();
-        assertTrue(dataAccess.bookRide("t1", new Ride("A", "B", Date.from(Instant.now()), 2, 25, null), 1, 2.5));
+        Mockito.doReturn(null).when(userQueryMock).getSingleResult();
+        assertFalse(dataAccess.gauzatuEragiketa("u4",12.04,true));
     }
 }

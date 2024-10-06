@@ -1,18 +1,12 @@
-package GauzatuEragiketaTest;
+package gauzatuEragiketaTest;
 
 import dataAccess.DataAccess;
-import domain.Ride;
-import domain.Traveler;
 import domain.User;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.*;
 import testOperations.TestDataAccess;
-
-import java.time.Instant;
-import java.util.Date;
 
 import static org.junit.Assert.*;
 
@@ -51,11 +45,14 @@ public class GauzatuEragiketaDBWhiteTest
     @Test
     public void test1()
     {
-    	try {
-    	dataAccess.close();
-    	 assertFalse(dataAccess.gauzatuEragiketa("u1",12.04,true));
-    	 dataAccess.open();
-    	}catch (Exception e) {
+    	try
+        {
+            dataAccess.close();
+    	    assertFalse(dataAccess.gauzatuEragiketa("u1",12.04,true));
+    	    dataAccess.open();
+    	}
+        catch (Exception e)
+        {
     		fail();
     	}
     }
