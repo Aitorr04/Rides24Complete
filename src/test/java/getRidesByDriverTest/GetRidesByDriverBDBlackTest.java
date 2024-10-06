@@ -4,7 +4,6 @@ import dataAccess.DataAccess;
 import domain.Driver;
 import domain.Ride;
 import org.junit.*;
-import org.mockito.Mockito;
 
 import testOperations.TestDataAccess;
 

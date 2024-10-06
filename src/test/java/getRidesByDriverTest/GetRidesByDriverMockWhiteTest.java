@@ -18,7 +18,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.eq;
 
-public class GetRidesByDriverMockTest {
+public class GetRidesByDriverMockWhiteTest {
 
 
     static DataAccess dataAccess;
