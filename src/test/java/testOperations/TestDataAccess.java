@@ -13,6 +13,7 @@ import domain.Booking;
 import domain.Driver;
 import domain.Ride;
 import domain.Traveler;
+import domain.User;
 
 
 public class TestDataAccess {
@@ -175,5 +176,39 @@ public class TestDataAccess {
 			db.getTransaction().begin();
 			db.createQuery("UPDATE Ride r SET r.active = :active").setParameter("active", active).executeUpdate();
 			db.getTransaction().commit();
+		}
+		
+		public User createUser(String name, String pass, String mota) {
+			System.out.println(">> TestDataAccess: addUser");
+			User user=null;
+				db.getTransaction().begin();
+				try {
+					user=new User(name,pass,mota);
+					db.persist(user);
+					db.getTransaction().commit();
+				}
+				catch (Exception e){
+					e.printStackTrace();
+				}
+				return user;
+	    }
+				
+		public boolean removeUser(String name) {
+			System.out.println(">> TestDataAccess: removeUser");
+			User u = db.find(User.class, name);
+			if (u!=null) {
+				db.getTransaction().begin();
+				db.remove(u);
+				db.getTransaction().commit();
+				return true;
+			} else 
+			return false;
+	    }
+		
+		public User createTestUser(String userName, String pass, String mota, double money)
+		{
+			User u=createUser(userName,pass,mota);
+			u.setMoney(money);
+			return u;
 		}
 }
