@@ -211,4 +211,17 @@ public class TestDataAccess {
 			u.setMoney(money);
 			return u;
 		}
+
+		public Driver createTestDriver(String name)
+		{
+			Driver d = null;
+			db.getTransaction().begin();
+			if (db.find(Driver.class, name) == null)
+			{
+				d = new Driver(name, "1234");
+				db.persist(d);
+			}
+			db.getTransaction().commit();
+			return d;
+		}
 }
