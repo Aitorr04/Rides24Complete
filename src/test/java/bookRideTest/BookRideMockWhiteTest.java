@@ -68,6 +68,7 @@ public class BookRideMockWhiteTest
     {
         Mockito.doThrow(UserException.class).when(et).commit();
         Mockito.doThrow(RollbackException.class).when(et).rollback();
+        Mockito.doReturn(Arrays.asList(t1)).when(query).getResultList();
 
         try
         {
