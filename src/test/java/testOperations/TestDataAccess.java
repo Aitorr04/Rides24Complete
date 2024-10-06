@@ -141,7 +141,7 @@ public class TestDataAccess {
 			return addDriverWithRide(driverName, from, to, date, nPlaces, price).getCreatedRides().get(0);
 		}
 
-		public Traveler createTestTraveler(String name, int money)
+		public Traveler createTestTraveler(String name, double money)
 		{
 			Traveler t = null;
 			db.getTransaction().begin();
