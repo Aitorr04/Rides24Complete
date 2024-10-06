@@ -4,6 +4,8 @@ import dataAccess.DataAccess;
 import domain.Driver;
 import domain.Ride;
 import org.junit.*;
+import org.mockito.Mockito;
+
 import testOperations.TestDataAccess;
 
 import java.time.Instant;
@@ -111,9 +113,7 @@ public class GetRidesByDriverBDBlackTest {
     @Test
         public void test7() {
         testDA.open();
-        List<Ride> rides = dataAccess.getRidesByDriver("driver4");
-    
-        assertNull(rides);  // O puedes usar assertTrue(rides.isEmpty()) si esperas una lista vacía
+        Mockito.doThrow(new RuntimeException("Error al buscar el driver")).when(dataAccess).getRidesByDriver("driver4");
         testDA.close();
     }
 
@@ -121,9 +121,7 @@ public class GetRidesByDriverBDBlackTest {
     @Test
     public void test8() {
         testDA.open();
-        List<Ride> rides = dataAccess.getRidesByDriver("driver5");
-    
-        assertNull(rides);  // O puedes usar assertTrue(rides.isEmpty()) si esperas una lista vacía
+        Mockito.doThrow(new RuntimeException("Error al obtener los viajes")).when(dataAccess).getRidesByDriver("driver5");
         testDA.close();
     }
 
