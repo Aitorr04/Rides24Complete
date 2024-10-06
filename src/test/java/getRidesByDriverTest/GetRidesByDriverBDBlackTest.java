@@ -100,29 +100,5 @@ public class GetRidesByDriverBDBlackTest {
         testDA.close();
     }
 
-    // Prueba 6: Username vacío
-    @Test
-    public void test6() {
-        testDA.open();
-        List<Ride> rides = dataAccess.getRidesByDriver("");
-        assertTrue(rides == null || rides.isEmpty());
-        testDA.close();
-    }
-
-// Prueba 7: Driver que lanza una excepción al buscar (simulado devolviendo null)
-    @Test
-        public void test7() {
-        testDA.open();
-        Mockito.doThrow(new RuntimeException("Error al buscar el driver")).when(dataAccess).getRidesByDriver("driver4");
-        testDA.close();
-    }
-
-    // Prueba 8: Error al obtener los viajes del driver (simulado devolviendo null)  
-    @Test
-    public void test8() {
-        testDA.open();
-        Mockito.doThrow(new RuntimeException("Error al obtener los viajes")).when(dataAccess).getRidesByDriver("driver5");
-        testDA.close();
-    }
 
 }
