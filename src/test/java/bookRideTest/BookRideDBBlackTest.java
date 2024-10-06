@@ -32,12 +32,13 @@ public class BookRideDBBlackTest
         t5 = testDA.createTestTraveler("t5", 22.5);
         t6 = testDA.createTestTraveler("t6", 23.5);
         testDA.close();
+        testDA.open();
     }
 
     @After
     public void tearDown()
     {
-        dataAccess.close();
+        testDA.close();
         testDA.open();
         testDA.removeDriver("d1");
         testDA.removeTraveler(t1);
@@ -45,20 +46,16 @@ public class BookRideDBBlackTest
         testDA.removeTraveler(t4);
         testDA.removeTraveler(t5);
         testDA.removeTraveler(t6);
+        testDA.removeBookings();
         testDA.close();
+        dataAccess.close();
     }
 
     @Test
     public void test1()
     {
-        testDA.open();
-        int initialBookingCount = testDA.getBookingCount();
-        if (!dataAccess.bookRide("t1", r1, 1, 2.5)) fail();
-        else
-        {
-            assertTrue(testDA.getBookingCount() > initialBookingCount);
-        }
-        testDA.close();
+        assertTrue(dataAccess.bookRide("t1", r1, 1, 2.5));
+        assertFalse(testDA.getBookings("t1").isEmpty());
     }
 
     @Test
@@ -71,48 +68,56 @@ public class BookRideDBBlackTest
     public void test3()
     {
         assertFalse(dataAccess.bookRide("t2", r1, 1, 2.5));
+        assertTrue(testDA.getBookings("t2").isEmpty());
     }
 
     @Test
     public void test4()
     {
         assertFalse(dataAccess.bookRide("t1", null, 1, 2.5));
+        assertTrue(testDA.getBookings("t1").isEmpty());
     }
 
     @Test
     public void test5()
     {
         assertFalse(dataAccess.bookRide("t1", new Ride("C", "D", Date.from(Instant.now()), 2, 100, r1.getDriver()), 1, 2.5));
+        assertTrue(testDA.getBookings("t1").isEmpty());
     }
 
     @Test
     public void test6()
     {
         assertFalse(dataAccess.bookRide("t1", r1, -5, 2.5));
+        assertTrue(testDA.getBookings("t1").isEmpty());
     }
 
     @Test
     public void test7()
     {
         assertFalse(dataAccess.bookRide("t1", r1, 5, 2.5));
+        assertTrue(testDA.getBookings("t1").isEmpty());
     }
 
     @Test
     public void test8()
     {
         assertFalse(dataAccess.bookRide("t1", r1, 1, -2.5));
+        assertTrue(testDA.getBookings("t1").isEmpty());
     }
 
     @Test
     public void test9()
     {
         assertFalse(dataAccess.bookRide("t1", r1, 1, 100));
+        assertTrue(testDA.getBookings("t1").isEmpty());
     }
 
     @Test
     public void test10()
     {
         assertFalse(dataAccess.bookRide("t3", r1, 1, 2.5));
+        assertTrue(testDA.getBookings("t3").isEmpty());
     }
 
     //VALORES LÍMITE
@@ -121,71 +126,83 @@ public class BookRideDBBlackTest
     public void testVlSeats1()
     {
         assertFalse(dataAccess.bookRide("t1", r1, 0, 2.5));
+        assertTrue(testDA.getBookings("t1").isEmpty());
     }
 
     @Test
     public void testVlSeats2()
     {
         assertTrue(dataAccess.bookRide("t1", r1, 2, 2.5));
+        assertFalse(testDA.getBookings("t1").isEmpty());
     }
 
     @Test
     public void testVlSeats3()
     {
         assertFalse(dataAccess.bookRide("t1", r1, 3, 2.5));
+        assertTrue(testDA.getBookings("t1").isEmpty());
     }
 
     @Test
     public void testVlDesk1()
     {
         assertFalse(dataAccess.bookRide("t1", r1, 1, -1));
+        assertTrue(testDA.getBookings("t1").isEmpty());
     }
 
     @Test
     public void testVlDesk2()
     {
         assertTrue(dataAccess.bookRide("t1", r1, 1, 0));
+        assertFalse(testDA.getBookings("t1").isEmpty());
     }
 
     @Test
     public void testVlDesk3()
     {
         assertTrue(dataAccess.bookRide("t1", r1, 1, 1));
+        assertFalse(testDA.getBookings("t1").isEmpty());
     }
 
     @Test
     public void testVlDesk4()
     {
         assertTrue(dataAccess.bookRide("t1", r1, 1, 24));
+        assertFalse(testDA.getBookings("t1").isEmpty());
     }
 
     @Test
     public void testVlDesk5()
     {
         assertTrue(dataAccess.bookRide("t1", r1, 1, 25));
+        assertFalse(testDA.getBookings("t1").isEmpty());
     }
 
     @Test
     public void testVlDesk6()
     {
         assertFalse(dataAccess.bookRide("t1", r1, 1, 26));
+        assertTrue(testDA.getBookings("t1").isEmpty());
     }
 
     @Test
     public void testVlMoney1()
     {
         assertFalse(dataAccess.bookRide("t4", r1, 1, 2.5));
+        assertTrue(testDA.getBookings("t4").isEmpty());
     }
 
     @Test
     public void testVlMoney2()
     {
         assertTrue(dataAccess.bookRide("t5", r1, 1, 2.5));
+        assertFalse(testDA.getBookings("t5").isEmpty());
     }
 
     @Test
     public void testVlMoney3()
     {
         assertTrue(dataAccess.bookRide("t6", r1, 1, 2.5));
+        assertFalse(testDA.getBookings("t6").isEmpty());
     }
 }

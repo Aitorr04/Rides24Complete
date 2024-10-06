@@ -31,16 +31,19 @@ public class BookRideDBWhiteTest
         r2 = testDA.createTestRide("d2", "C", "D", Date.from(Instant.now()), 2, 100);
         t1 = testDA.createTestTraveler("t1", 50);
         testDA.close();
+        testDA.open();
     }
 
     @After
     public void tearDown()
     {
+        testDA.close();
         dataAccess.close();
         testDA.open();
         testDA.removeDriver("d1");
         testDA.removeDriver("d2");
         testDA.removeTraveler(t1);
+        testDA.removeBookings();
         testDA.close();
     }
 
@@ -52,6 +55,7 @@ public class BookRideDBWhiteTest
         try
         {
             assertFalse(dataAccess.bookRide("t1", rideInexistente, 1, 2.5));
+            assertTrue(testDA.getBookings("t1").isEmpty());
         }
         catch (Exception e)
         {
@@ -64,6 +68,7 @@ public class BookRideDBWhiteTest
     public void test2()
     {
         assertFalse(dataAccess.bookRide("traveler que no está en la bd", r1, 1, 2.5));
+        assertTrue(testDA.getBookings("traveler que no está en la bd").isEmpty());
     }
 
     //Prueba para reservar más asientos de los disponibles en un viaje
@@ -71,6 +76,7 @@ public class BookRideDBWhiteTest
     public void test3()
     {
         assertFalse(dataAccess.bookRide("t1", r1, 5, 2.5));
+        assertTrue(testDA.getBookings("t1").isEmpty());
     }
 
     //Prueba para reservar un viaje cuando el viajero no tiene dinero suficiente
@@ -78,19 +84,14 @@ public class BookRideDBWhiteTest
     public void test4()
     {
         assertFalse(dataAccess.bookRide("t1", r2, 1, 2.5));
+        assertTrue(testDA.getBookings("t1").isEmpty());
     }
 
     //Prueba para verificar que se hace correctamente la reserva de un viaje
     @Test
     public void test5()
     {
-        testDA.open();
-        int initialBookingCount = testDA.getBookingCount();
-        if (!dataAccess.bookRide("t1", r1, 1, 2.5)) fail();
-        else
-        {
-            assertTrue(testDA.getBookingCount() > initialBookingCount);
-        }
-        testDA.close();
+        assertTrue(dataAccess.bookRide("t1", r1, 1, 2.5));
+        assertFalse(testDA.getBookings("t1").isEmpty());
     }
 }

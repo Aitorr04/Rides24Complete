@@ -1,12 +1,11 @@
 package testOperations;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
 
 import configuration.ConfigXML;
 import domain.Booking;
@@ -166,9 +165,23 @@ public class TestDataAccess {
 			db.getTransaction().commit();
 		}
 
-		public int getBookingCount()
+		public List<Booking> getBookings(String username)
 		{
-			return  db.createQuery("SELECT b FROM Booking b").getResultList().size();
+			Traveler t = db.find(Traveler.class, username);
+			System.out.println(t == null ? "null" : t.getBookedRides().size());
+			return t == null ? new ArrayList() : t.getBookedRides();
+		}
+
+		public void removeBookings()
+		{
+			db.getTransaction().begin();
+			TypedQuery<Booking> query = db.createQuery("SELECT b FROM Booking b", Booking.class);
+			List<Booking> resultList = query.getResultList();
+			for (Booking b : resultList)
+			{
+				db.remove(b);
+			}
+			db.getTransaction().commit();
 		}
 
 		public void setActiveRide(boolean active)
