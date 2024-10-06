@@ -98,6 +98,4 @@ public class GetRidesByDriverBDBlackTest {
         assertNull(rides); 
         testDA.close();
     }
-
-
 }

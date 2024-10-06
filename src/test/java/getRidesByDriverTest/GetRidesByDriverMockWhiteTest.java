@@ -23,7 +23,7 @@ public class GetRidesByDriverMockWhiteTest {
 
     static DataAccess dataAccess;
     static Driver d1, d3;
-    static TypedQuery<Traveler> query;
+    static TypedQuery<Driver> query;
 
     protected MockedStatic<Persistence> persistenceMock;
 

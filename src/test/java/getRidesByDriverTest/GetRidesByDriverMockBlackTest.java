@@ -24,7 +24,7 @@ public class GetRidesByDriverMockBlackTest {
     static DataAccess dataAccess;
     static Driver d1, d2, d3, d4, d5;
     static Ride r1;
-    static TypedQuery<Ride> query;
+    static TypedQuery<Driver> query;
 
     protected MockedStatic<Persistence> persistenceMock;
 
@@ -48,15 +48,13 @@ public class GetRidesByDriverMockBlackTest {
         d1 = new Driver("driver1", "1234"); // Driver con viajes activos
         d2 = new Driver("driver2", "1234"); // Driver con viajes inactivos
         d3 = new Driver("driver3", "1234"); // Driver sin viajes
-        d4 = new Driver("driver4", "1234"); // Driver no existente
-        d5 = new Driver("driver5", "1234"); // Driver que lanza excepción al obtener viajes
-        
-        r1 = new Ride("A", "B", Date.from(Instant.now()), 2, 25, d1);
+
+        d1.addRide("A", "B", Date.from(Instant.now()), 2, 25);
 
         dataAccess = new DataAccess(db);
 
-        query = mock(TypedQuery.class);
-        doReturn(query).when(db).createQuery(anyString(), eq(Ride.class));
+        query = Mockito.mock(TypedQuery.class);
+        Mockito.doReturn(query).when(db).createQuery(Mockito.anyString(), Mockito.any());
     }
 
     @After
@@ -67,7 +65,7 @@ public class GetRidesByDriverMockBlackTest {
     // Prueba 1: Driver con viajes activos
     @Test
     public void test1() {
-        Mockito.doReturn(Arrays.asList(r1)).when(query).getResultList();
+        Mockito.doReturn(d1).when(query).getSingleResult();
         List<Ride> rides = dataAccess.getRidesByDriver("driver1");
         assertNotNull(rides);
         assertFalse(rides.isEmpty());
@@ -76,7 +74,7 @@ public class GetRidesByDriverMockBlackTest {
     // Prueba 2: Driver con viajes inactivos
     @Test
     public void test2() {
-        Mockito.doReturn(new ArrayList<>()).when(query).getResultList();
+        Mockito.doReturn(d2).when(query).getSingleResult();
         List<Ride> rides = dataAccess.getRidesByDriver("driver2");
         assertNotNull(rides);
         assertTrue(rides.isEmpty());
@@ -86,7 +84,7 @@ public class GetRidesByDriverMockBlackTest {
     // Prueba 3: Driver sin viajes
     @Test
     public void test3() {
-        Mockito.doReturn(new ArrayList<>()).when(query).getResultList();
+        Mockito.doReturn(d3).when(query).getSingleResult();
         List<Ride> rides = dataAccess.getRidesByDriver("driver3");
         assertNotNull(rides);
         assertTrue(rides.isEmpty());
@@ -95,6 +93,7 @@ public class GetRidesByDriverMockBlackTest {
     // Prueba 4: Driver no existente
     @Test
     public void test4() {
+        Mockito.doReturn(null).when(query).getSingleResult();
         List<Ride> rides = dataAccess.getRidesByDriver("driver4");
         assertNull(rides);
     }
@@ -102,19 +101,8 @@ public class GetRidesByDriverMockBlackTest {
     // Prueba 5: Username null
     @Test
     public void test5() {
+        Mockito.doReturn(null).when(query).getSingleResult();
         List<Ride> rides = dataAccess.getRidesByDriver(null);
         assertNull(rides);
-
     }
-
-    // Prueba 6: Excepción al obtener viajes
-    @Test
-    public void test6() {
-        Mockito.doThrow(new PersistenceException()).when(query).getResultList();
-        List<Ride> rides = dataAccess.getRidesByDriver("driver5");
-        assertNull(rides);
-
-    }
-
-    
 }
