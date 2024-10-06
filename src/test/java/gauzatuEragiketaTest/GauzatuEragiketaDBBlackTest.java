@@ -6,8 +6,10 @@ import domain.Traveler;
 import domain.User;
 
 import org.junit.*;
+import org.mockito.Mockito;
 import testOperations.TestDataAccess;
 
+import javax.persistence.TypedQuery;
 import java.time.Instant;
 import java.util.Date;
 
@@ -18,6 +20,7 @@ public class GauzatuEragiketaDBBlackTest
     static DataAccess dataAccess = new DataAccess();
     //additional operations needed to execute the test
     static TestDataAccess testDA = new TestDataAccess();
+    static TypedQuery<User> userQueryMock;
 
     private User u4, u5, u999;
 
@@ -45,13 +48,13 @@ public class GauzatuEragiketaDBBlackTest
     @Test
     public void test1()
     {
-    	assertTrue(dataAccess.gauzatuEragiketa("u4", 20, true));
+        assertTrue(dataAccess.gauzatuEragiketa("u4", 20, true));
     }
 
     @Test
     public void test2()
     {
-    	assertTrue(dataAccess.gauzatuEragiketa("u5", 82, false));
+        assertTrue(dataAccess.gauzatuEragiketa("u5", 82, false));
     }
 
     @Test
