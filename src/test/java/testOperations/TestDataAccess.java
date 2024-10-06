@@ -169,4 +169,11 @@ public class TestDataAccess {
 		{
 			return  db.createQuery("SELECT b FROM Booking b").getResultList().size();
 		}
+
+		public void setActiveRide(boolean active)
+		{
+			db.getTransaction().begin();
+			db.createQuery("UPDATE Ride r SET r.active = :active").setParameter("active", active).executeUpdate();
+			db.getTransaction().commit();
+		}
 }
