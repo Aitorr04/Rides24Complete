@@ -74,7 +74,7 @@ public class GetRidesByDriverBDWhiteTest {
         String to = "Zarautz";
         Date date = new java.util.Date();
         try {
-            // Inicializar la base de datos con datos de prueba
+            // Inicializar la base de datos con datos de prueba  
             testDA.open();
             testDA.addDriverWithRide(username, from, to, date, 2, 10); // Añadir un viaje no activo
             testDA.setActiveRide(false); // Desactivar el viaje
