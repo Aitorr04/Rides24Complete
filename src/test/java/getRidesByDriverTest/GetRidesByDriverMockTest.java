@@ -2,6 +2,7 @@ package getRidesByDriverTest;
 
 import com.objectdb.o.UserException;
 import dataAccess.DataAccess;
+import domain.Driver;
 import domain.Ride;
 import domain.Traveler;
 import org.junit.*;
@@ -21,8 +22,7 @@ public class GetRidesByDriverMockTest {
 
 
     static DataAccess dataAccess;
-    static Traveler t1;
-    static Ride r1 = new Ride("A", "B", Date.from(Instant.now()), 2, 25, null);
+    static Driver d1, d3;
     static TypedQuery<Traveler> query;
 
     protected MockedStatic<Persistence> persistenceMock;
@@ -45,12 +45,14 @@ public class GetRidesByDriverMockTest {
         Mockito.doReturn(db).when(entityManagerFactory).createEntityManager();
         Mockito.doReturn(et).when(db).getTransaction();
 
+        d1 = new Driver("d1", "1234"); //Driver con viajes
+        d1.addRide("A", "B", Date.from(Instant.now()), 2, 25);
+
+        d3 = new Driver("d3", "1234"); //Driver sin viajes
+
         query = Mockito.mock(TypedQuery.class);
         Mockito.doReturn(query).when(db).createQuery(Mockito.anyString(), Mockito.any());
-        Mockito.doReturn(Arrays.asList(t1)).when(query).getResultList();
 
-        t1 = new Traveler("t1", "1234");
-        t1.setMoney(50);
         dataAccess = new DataAccess(db);
     }
 
@@ -60,23 +62,67 @@ public class GetRidesByDriverMockTest {
         persistenceMock.close();
     }
 
-    //Prueba para reservar un viaje que no está en la base de datos
+
     @Test
     public void test1()
     {
-        Mockito.doThrow(UserException.class).when(et).commit();
-        Mockito.doThrow(RollbackException.class).when(et).rollback();
-
-        try {
-            //define parameters
-            String driverUsername="Driver Test";
-
-            List<Ride> result =sut.getRidesByDriver(driverUsername);   
-
-            assertNull(result);
-        } catch (Exception e) {
+        Mockito.doReturn(null).when(query).getSingleResult();
+        try
+        {
+            assertNull(dataAccess.getRidesByDriver("d2"));
+        }
+        catch(Exception e)
+        {
             fail();
         }
     }
 
+    @Test
+    public void test2()
+    {
+        Mockito.doReturn(d3).when(query).getSingleResult();
+        try
+        {
+            List<Ride> result = dataAccess.getRidesByDriver("d3");
+            assertNotNull(result);
+            assertTrue(result.isEmpty());
+        }
+        catch(Exception e)
+        {
+            fail();
+        }
+    }
+
+    @Test
+    public void test3()
+    {
+        d1.getCreatedRides().get(0).setActive(false);
+        Mockito.doReturn(d1).when(query).getSingleResult();
+        try
+        {
+            List<Ride> result = dataAccess.getRidesByDriver("d1");
+            assertNotNull(result);
+            assertTrue(result.isEmpty());
+        }
+        catch(Exception e)
+        {
+            fail();
+        }
+    }
+
+    @Test
+    public void test4()
+    {
+        Mockito.doReturn(d1).when(query).getSingleResult();
+        try
+        {
+            List<Ride> result = dataAccess.getRidesByDriver("d1");
+            assertNotNull(result);
+            assertFalse(result.isEmpty());
+        }
+        catch(Exception e)
+        {
+            fail();
+        }
+    }
 }

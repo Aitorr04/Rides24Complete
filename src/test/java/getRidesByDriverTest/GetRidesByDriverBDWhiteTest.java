@@ -42,7 +42,7 @@ public class GetRidesByDriverBDWhiteTest {
     }
 
     @Test
-    //sut.getRidesByDriver:  The username fits a driver in the database but it doesnt have any ride. The test must return an empty list of activeRides. If  an Exception is returned the getRidesByDriver method is not well implemented.
+    //sut.getRidesByDriver:  The username fits a driver in the database but it doesnt have any ride. The test must return an empty list of activeRides. If an Exception is returned the getRidesByDriver method is not well implemented.
     public void test2() {
         String username = "Driver Test";
         try {
@@ -67,7 +67,7 @@ public class GetRidesByDriverBDWhiteTest {
     }
 
     @Test
-    //sut.getRidesByDriver:  The username fits a driver in the database and it has rides but no active ones. The test must return a list of activeRides. If  an Exception is returned the getRidesByDriver method is not well implemented.
+    //sut.getRidesByDriver:  The username fits a driver in the database and it has rides but no active ones. The test must return a list of activeRides. If an Exception is returned the getRidesByDriver method is not well implemented.
     public void test3() {
         String username = "Driver Test";
         String from = "Donostia";
