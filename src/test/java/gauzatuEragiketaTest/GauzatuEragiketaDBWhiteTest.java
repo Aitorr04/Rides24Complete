@@ -78,6 +78,6 @@ public class GauzatuEragiketaDBWhiteTest
     @Test
     public void test5()
     {
-    	 assertFalse(dataAccess.gauzatuEragiketa("u4",12.04,true));
+    	 assertFalse(dataAccess.gauzatuEragiketa("u99",12.04,true));
     }
 }
