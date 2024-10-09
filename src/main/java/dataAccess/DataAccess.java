@@ -28,7 +28,6 @@ import exceptions.RideMustBeLaterThanTodayException;
  */
 public class DataAccess {
 	private EntityManager db;
-	private EntityManagerFactory emf;
 
 	ConfigXML c = ConfigXML.getInstance();
 	
@@ -213,10 +212,9 @@ public class DataAccess {
 	 */
 	public List<String> getArrivalCities(String from) {
 		TypedQuery<String> query = db.createQuery("SELECT DISTINCT r.to FROM Ride r WHERE r.from=?1 ORDER BY r.to",
-				String.class);
+		String.class);
 		query.setParameter(1, from);
-		List<String> arrivingCities = query.getResultList();
-		return arrivingCities;
+		return query.getResultList();
 
 	}
 
@@ -324,20 +322,26 @@ public class DataAccess {
 
 	public void open() {
 
-		String fileName = c.getDbFilename();
-		if (c.isDatabaseLocal()) {
-			emf = Persistence.createEntityManagerFactory("objectdb:" + fileName);
-			db = emf.createEntityManager();
-		} else {
-			Map<String, String> properties = new HashMap<>();
-			properties.put("javax.persistence.jdbc.user", c.getUser());
-			properties.put("javax.persistence.jdbc.password", c.getPassword());
+        String fileName = c.getDbFilename();
+        EntityManagerFactory emf;
 
-			emf = Persistence.createEntityManagerFactory(
-					"objectdb://" + c.getDatabaseNode() + ":" + c.getDatabasePort() + "/" + fileName, properties);
-			db = emf.createEntityManager();
-		}
-		logger.info("DataAccess opened => isDatabaseLocal: " + c.isDatabaseLocal());
+        if (c.isDatabaseLocal()) {
+            emf = Persistence.createEntityManagerFactory("objectdb:" + fileName);
+        } else {
+            Map<String, String> properties = new HashMap<>();
+            properties.put("javax.persistence.jdbc.user", c.getUser());
+            properties.put("javax.persistence.jdbc.password", c.getPassword());
+
+            emf = Persistence.createEntityManagerFactory(
+                    "objectdb://" + c.getDatabaseNode() + ":" + c.getDatabasePort() + "/" + fileName, properties);
+        }
+
+        db = emf.createEntityManager(); // Crear el EntityManager
+
+        logger.info("DataAccess opened => isDatabaseLocal: " + c.isDatabaseLocal());
+        
+        // Aquí puedes cerrar el EntityManagerFactory si no se necesita en otros métodos
+        emf.close();
 
 	}
 
