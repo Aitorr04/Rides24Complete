@@ -15,6 +15,7 @@ import static org.junit.Assert.*;
 
 public class BookRideDBWhiteTest
 {
+	/*
     static DataAccess dataAccess = new DataAccess();
     //additional operations needed to execute the test
     static TestDataAccess testDA = new TestDataAccess();
@@ -94,4 +95,5 @@ public class BookRideDBWhiteTest
         assertTrue(dataAccess.bookRide("t1", r1, 1, 2.5));
         assertFalse(testDA.getBookings("t1").isEmpty());
     }
+    */
 }

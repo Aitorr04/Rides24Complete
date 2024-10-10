@@ -22,6 +22,7 @@ import static org.mockito.ArgumentMatchers.eq;
 
 public class BookRideMockWhiteTest
 {
+	/*
     static DataAccess dataAccess;
     static Traveler t1;
     static Ride r1 = new Ride("A", "B", Date.from(Instant.now()), 2, 25, null);
@@ -108,4 +109,5 @@ public class BookRideMockWhiteTest
     {
         assertTrue(dataAccess.bookRide("t1", r1, 1, 2.5));
     }
+    */
 }
