@@ -13,6 +13,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 
+import dataAccess.RideInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -87,7 +88,7 @@ public class CreateRideMockWhiteTest {
 				
 				//invoke System Under Test (sut)  
 				sut.open();
-				Ride ride=sut.createRide(rideFrom, rideTo, rideDate, 0, 0, driverUserName);
+				Ride ride=sut.createRide(new RideInfo(rideFrom, rideTo, rideDate, 0, 0, driverUserName));
 
 				//verify the results
 				assertNull(ride);
@@ -141,7 +142,7 @@ public class CreateRideMockWhiteTest {
 			
 	      //invoke System Under Test (sut)  
 			sut.open();
-		    Ride r=sut.createRide(rideFrom, rideTo, rideDate, 0, 0, driverUsername);
+		    Ride r=sut.createRide(new RideInfo(rideFrom, rideTo, rideDate, 0, 0, driverUsername));
 			sut.close();
 			
 			assertNull(r);
@@ -185,7 +186,7 @@ public class CreateRideMockWhiteTest {
 				
 				//invoke System Under Test (sut)  
 				sut.open();
-				Ride ride=sut.createRide(rideFrom, rideTo, rideDate, 0, 0, driverUserName);
+				Ride ride=sut.createRide(new RideInfo(rideFrom, rideTo, rideDate, 0, 0, driverUserName));
 
 				//verify the results
 				assertNull(ride);
@@ -239,7 +240,7 @@ public class CreateRideMockWhiteTest {
 			
 			//invoke System Under Test (sut)  
 			sut.open();
-		    sut.createRide(rideFrom, rideTo, rideDate, 0, 0, driverUsername);
+		    sut.createRide(new RideInfo(rideFrom, rideTo, rideDate, 0, 0, driverUsername));
 			sut.close();
 			
 			fail();
@@ -284,7 +285,7 @@ public class CreateRideMockWhiteTest {
 					
 			//invoke System Under Test (sut)  
 			sut.open();
-			Ride ride=sut.createRide(rideFrom, rideTo, rideDate, 0, 0, driverUsername);
+			Ride ride=sut.createRide(new RideInfo(rideFrom, rideTo, rideDate, 0, 0, driverUsername));
 			sut.close();
 			//verify the results
 			assertNotNull(ride);

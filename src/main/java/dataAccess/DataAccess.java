@@ -1,6 +1,5 @@
 package dataAccess;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -219,38 +218,34 @@ public class DataAccess {
 
 	/**
 	 * This method creates a ride for a driver
-	 * 
-	 * @param from        the origin location of a ride
-	 * @param to          the destination location of a ride
-	 * @param date        the date of the ride
-	 * @param nPlaces     available seats
+	 *
 	 * @param driverEmail to which ride is added
-	 * 
+	 * @param rideInfo
 	 * @return the created ride, or null, or an exception
 	 * @throws RideMustBeLaterThanTodayException if the ride date is before today
 	 * @throws RideAlreadyExistException         if the same ride already exists for
 	 *                                           the driver
 	 */
-	public Ride createRide(String from, String to, Date date, int nPlaces, float price, String driverName)
+	public Ride createRide(RideInfo rideInfo)
 			throws RideAlreadyExistException, RideMustBeLaterThanTodayException {
 		logger.info(
-				">> DataAccess: createRide=> from= " + from + " to= " + to + " driver=" + driverName + " date " + date);
-		if (driverName==null) return null;
+				">> DataAccess: createRide=> from= " + rideInfo.getFrom() + " to= " + rideInfo.getTo() + " driver=" + rideInfo.getDriverName() + " date " + rideInfo.getDate());
+		if (rideInfo.getDriverName() ==null) return null;
 		try {
-			if (new Date().compareTo(date) > 0) {
+			if (new Date().compareTo(rideInfo.getDate()) > 0) {
 				logger.info("ppppp");
 				throw new RideMustBeLaterThanTodayException(
 						ResourceBundle.getBundle("Etiquetas").getString("CreateRideGUI.ErrorRideMustBeLaterThanToday"));
 			}
 
 			db.getTransaction().begin();
-			Driver driver = db.find(Driver.class, driverName);
-			if (driver.doesRideExists(from, to, date)) {
+			Driver driver = db.find(Driver.class, rideInfo.getDriverName());
+			if (driver.doesRideExists(rideInfo.getFrom(), rideInfo.getTo(), rideInfo.getDate())) {
 				db.getTransaction().commit();
 				throw new RideAlreadyExistException(
 						ResourceBundle.getBundle("Etiquetas").getString("DataAccess.RideAlreadyExist"));
 			}
-			Ride ride = driver.addRide(from, to, date, nPlaces, price);
+			Ride ride = driver.addRide(rideInfo.getFrom(), rideInfo.getTo(), rideInfo.getDate(), rideInfo.getnPlaces(), rideInfo.getPrice());
 			// next instruction can be obviated
 			db.persist(driver);
 			db.getTransaction().commit();
