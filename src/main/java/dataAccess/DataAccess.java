@@ -460,13 +460,9 @@ public class DataAccess {
 	public boolean addTraveler(String username, String password) {
 		try {
 			db.getTransaction().begin();
-
 			Driver existingDriver = getDriver(username);
 			Traveler existingTraveler = getTraveler(username);
-			if (existingDriver != null || existingTraveler != null) {
-				return false;
-			}
-
+			if (existingDriver != null || existingTraveler != null) return false;
 			Traveler traveler = new Traveler(username, password);
 			db.persist(traveler);
 			db.getTransaction().commit();
@@ -484,14 +480,7 @@ public class DataAccess {
 			User user = getUser(username);
 			if (user != null) {
 				double currentMoney = user.getMoney();
-				if (deposit) {
-					user.setMoney(currentMoney + amount);
-				} else {
-					if ((currentMoney - amount) < 0)
-						user.setMoney(0);
-					else
-						user.setMoney(currentMoney - amount);
-				}
+				user.setMoney(calculateAmount(currentMoney,amount,deposit));
 				db.merge(user);
 				db.getTransaction().commit();
 				return true;
@@ -502,6 +491,17 @@ public class DataAccess {
 			e.printStackTrace();
 			db.getTransaction().rollback();
 			return false;
+		}
+	}
+	
+	private double calculateAmount(double currentMoney, double amount,boolean deposit) {
+		if (deposit) {
+			return currentMoney + amount;
+		} else {
+			if ((currentMoney - amount) < 0)
+				return 0;
+			else
+				return currentMoney - amount;
 		}
 	}
 
@@ -736,12 +736,11 @@ public class DataAccess {
 		return era;
 	}
 
-	public boolean erreklamazioaBidali(String nor, String nori, Date gaur, Booking booking, String textua,
-			boolean aurk) {
+	public boolean erreklamazioaBidali(ErreklamazioData erreklamazioData) {
 		try {
 			db.getTransaction().begin();
 
-			Complaint erreklamazioa = new Complaint(nor, nori, gaur, booking, textua, aurk);
+			Complaint erreklamazioa = new Complaint(erreklamazioData.nor,erreklamazioData.nori,erreklamazioData.gaur,erreklamazioData.booking,erreklamazioData.textua,erreklamazioData.aurk);
 			db.persist(erreklamazioa);
 			db.getTransaction().commit();
 			return true;

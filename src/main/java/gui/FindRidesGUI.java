@@ -195,20 +195,12 @@ public class FindRidesGUI extends JFrame {
 
 						e1.printStackTrace();
 					}
-					tableRides.getColumnModel().getColumn(0).setPreferredWidth(50);
-					tableRides.getColumnModel().getColumn(1).setPreferredWidth(50);
-					tableRides.getColumnModel().getColumn(2).setPreferredWidth(100);
-					tableRides.getColumnModel().getColumn(3).setPreferredWidth(50);
-					tableRides.getColumnModel().removeColumn(tableRides.getColumnModel().getColumn(4)); // not shown in
-																										// JTable
-					tableRides.getTableHeader().setReorderingAllowed(false);
-					tableRides.setColumnSelectionAllowed(false);
-					tableRides.setRowSelectionAllowed(true);
-					tableRides.setDefaultEditor(Object.class, null);
+					setUpColumns();
 				}
 			}
 
 		});
+		
 
 		this.getContentPane().add(jCalendar1, null);
 
@@ -222,17 +214,7 @@ public class FindRidesGUI extends JFrame {
 		tableModelRides.setDataVector(null, columnNamesRides);
 		tableModelRides.setColumnCount(5); // another column added to allocate ride objects
 
-		tableRides.getColumnModel().getColumn(0).setPreferredWidth(50);
-		tableRides.getColumnModel().getColumn(1).setPreferredWidth(50);
-		tableRides.getColumnModel().getColumn(2).setPreferredWidth(100);
-		tableRides.getColumnModel().getColumn(3).setPreferredWidth(50);
-
-		tableRides.getTableHeader().setReorderingAllowed(false);
-		tableRides.setColumnSelectionAllowed(false);
-		tableRides.setRowSelectionAllowed(true);
-		tableRides.setDefaultEditor(Object.class, null);
-
-		tableRides.getColumnModel().removeColumn(tableRides.getColumnModel().getColumn(4)); // not shown in JTable
+		setUpColumns();
 
 		this.getContentPane().add(scrollPaneEvents, null);
 		datesWithRidesCurrentMonth = facade.getThisMonthDatesWithRides((String) jComboBoxOrigin.getSelectedItem(),
@@ -282,6 +264,20 @@ public class FindRidesGUI extends JFrame {
 
 	private void jButton2_actionPerformed(ActionEvent e) {
 		this.setVisible(false);
+	}
+	
+	private void setUpColumns(){
+		tableRides.getColumnModel().getColumn(0).setPreferredWidth(50);
+		tableRides.getColumnModel().getColumn(1).setPreferredWidth(50);
+		tableRides.getColumnModel().getColumn(2).setPreferredWidth(100);
+		tableRides.getColumnModel().getColumn(3).setPreferredWidth(50);
+		
+		tableRides.getColumnModel().removeColumn(tableRides.getColumnModel().getColumn(4));
+		
+		tableRides.getTableHeader().setReorderingAllowed(false);
+		tableRides.setColumnSelectionAllowed(false);
+		tableRides.setRowSelectionAllowed(true);
+		tableRides.setDefaultEditor(Object.class, null);
 	}
 
 }
