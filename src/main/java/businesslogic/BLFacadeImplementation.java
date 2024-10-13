@@ -8,6 +8,7 @@ import javax.jws.WebMethod;
 import javax.jws.WebService;
 
 import configuration.ConfigXML;
+import dataAccess.BookingData;
 import dataAccess.DataAccess;
 import dataAccess.ErreklamazioData;
 import dataAccess.RideData;
@@ -207,7 +208,7 @@ public class BLFacadeImplementation implements BLFacade {
 	public boolean bookRide(String username, Ride ride, int seats, double desk) {
 		boolean ondo;
 		dbManager.open();
-		ondo = dbManager.bookRide(username, ride, seats, desk);
+		ondo = dbManager.bookRide(new BookingData(username, ride, seats, desk));
 		dbManager.close();
 		return ondo;
 	}

@@ -1,6 +1,7 @@
 package bookRideTest;
 
 import com.objectdb.o.UserException;
+import dataAccess.BookingData;
 import dataAccess.DataAccess;
 import domain.Ride;
 import domain.Traveler;
@@ -72,7 +73,7 @@ public class BookRideMockWhiteTest
 
         try
         {
-            assertFalse(dataAccess.bookRide("t1", r1, 1, 2.5));
+            assertFalse(dataAccess.bookRide(new BookingData("t1", r1, 1, 2.5)));
         }
         catch (Exception e)
         {
@@ -85,27 +86,27 @@ public class BookRideMockWhiteTest
     public void test2()
     {
         Mockito.doReturn(new ArrayList<Traveler>()).when(query).getResultList();
-        assertFalse(dataAccess.bookRide("t2", r1, 1, 2.5));
+        assertFalse(dataAccess.bookRide(new BookingData("t2", r1, 1, 2.5)));
     }
 
     //Prueba para reservar más asientos de los disponibles en un viaje
     @Test
     public void test3()
     {
-        assertFalse(dataAccess.bookRide("t1", r1, 5, 2.5));
+        assertFalse(dataAccess.bookRide(new BookingData("t1", r1, 5, 2.5)));
     }
 
     //Prueba para reservar un viaje cuando el viajero no tiene dinero suficiente
     @Test
     public void test4()
     {
-        assertFalse(dataAccess.bookRide("t1", new Ride("A", "B", Date.from(Instant.now()), 2, 100, null), 1, 2.5));
+        assertFalse(dataAccess.bookRide(new BookingData("t1", new Ride("A", "B", Date.from(Instant.now()), 2, 100, null), 1, 2.5)));
     }
 
     //Prueba para verificar que se hace correctamente la reserva de un viaje
     @Test
     public void test5()
     {
-        assertTrue(dataAccess.bookRide("t1", r1, 1, 2.5));
+        assertTrue(dataAccess.bookRide(new BookingData("t1", r1, 1, 2.5)));
     }
 }

@@ -518,14 +518,14 @@ public class DataAccess {
 		}
 	}
 
-	public boolean bookRide(String username, Ride ride, int seats, double desk) {
+	public boolean bookRide(BookingData bookingData) {
 		try {
 			db.getTransaction().begin();
 
-			Traveler traveler = getTraveler(username);
-			if (traveler == null || ride.getnPlaces() < seats || traveler.getMoney() < (ride.getPrice() - desk) * seats) return false;
+			Traveler traveler = getTraveler(bookingData.getUsername());
+			if (traveler == null || bookingData.getRide().getnPlaces() < bookingData.getSeats() || traveler.getMoney() < (bookingData.getRide().getPrice() - bookingData.getDesk()) * bookingData.getSeats()) return false;
 
-			saveBooking(ride, seats, desk, traveler);
+			saveBooking(bookingData.getRide(), bookingData.getSeats(), bookingData.getDesk(), traveler);
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();

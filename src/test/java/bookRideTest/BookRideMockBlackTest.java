@@ -1,5 +1,6 @@
 package bookRideTest;
 
+import dataAccess.BookingData;
 import dataAccess.DataAccess;
 import domain.Ride;
 import domain.Traveler;
@@ -77,64 +78,64 @@ public class BookRideMockBlackTest
     @Test
     public void test1()
     {
-        assertTrue(dataAccess.bookRide("t1", r1, 1, 2.5));
+        assertTrue(dataAccess.bookRide(new BookingData("t1", r1, 1, 2.5)));
     }
 
     @Test
     public void test2()
     {
         Mockito.doReturn(null).when(query).getResultList();
-        assertFalse(dataAccess.bookRide(null, r1, 1, 2.5));
+        assertFalse(dataAccess.bookRide(new BookingData(null, r1, 1, 2.5)));
     }
 
     @Test
     public void test3()
     {
         Mockito.doReturn(new ArrayList<Traveler>()).when(query).getResultList();
-        assertFalse(dataAccess.bookRide("t2", r1, 1, 2.5));
+        assertFalse(dataAccess.bookRide(new BookingData("t2", r1, 1, 2.5)));
     }
 
     @Test
     public void test4()
     {
-        assertFalse(dataAccess.bookRide("t1", null, 1, 2.5));
+        assertFalse(dataAccess.bookRide(new BookingData("t1", null, 1, 2.5)));
     }
 
     @Test
     public void test5()
     {
-        assertFalse(dataAccess.bookRide("t1", new Ride("C", "D", Date.from(Instant.now()), 2, 100, r1.getDriver()), 1, 2.5));
+        assertFalse(dataAccess.bookRide(new BookingData("t1", new Ride("C", "D", Date.from(Instant.now()), 2, 100, r1.getDriver()), 1, 2.5)));
     }
 
     @Test
     public void test6()
     {
-        assertFalse(dataAccess.bookRide("t1", r1, -5, 2.5));
+        assertFalse(dataAccess.bookRide(new BookingData("t1", r1, -5, 2.5)));
     }
 
     @Test
     public void test7()
     {
-        assertFalse(dataAccess.bookRide("t1", r1, 5, 2.5));
+        assertFalse(dataAccess.bookRide(new BookingData("t1", r1, 5, 2.5)));
     }
 
     @Test
     public void test8()
     {
-        assertFalse(dataAccess.bookRide("t1", r1, 1, -2.5));
+        assertFalse(dataAccess.bookRide(new BookingData("t1", r1, 1, -2.5)));
     }
 
     @Test
     public void test9()
     {
-        assertFalse(dataAccess.bookRide("t1", r1, 1, 100));
+        assertFalse(dataAccess.bookRide(new BookingData("t1", r1, 1, 100)));
     }
 
     @Test
     public void test10()
     {
         Mockito.doReturn(Arrays.asList(t3)).when(query).getResultList();
-        assertFalse(dataAccess.bookRide("t3", r1, 1, 2.5));
+        assertFalse(dataAccess.bookRide(new BookingData("t3", r1, 1, 2.5)));
     }
 
     //VALORES LÍMITE
@@ -142,75 +143,75 @@ public class BookRideMockBlackTest
     @Test
     public void testVlSeats1()
     {
-        assertFalse(dataAccess.bookRide("t1", r1, 0, 2.5));
+        assertFalse(dataAccess.bookRide(new BookingData("t1", r1, 0, 2.5)));
     }
 
     @Test
     public void testVlSeats2()
     {
-        assertTrue(dataAccess.bookRide("t1", r1, 2, 2.5));
+        assertTrue(dataAccess.bookRide(new BookingData("t1", r1, 2, 2.5)));
     }
 
     @Test
     public void testVlSeats3()
     {
-        assertFalse(dataAccess.bookRide("t1", r1, 3, 2.5));
+        assertFalse(dataAccess.bookRide(new BookingData("t1", r1, 3, 2.5)));
     }
 
     @Test
     public void testVlDesk1()
     {
-        assertFalse(dataAccess.bookRide("t1", r1, 1, -1));
+        assertFalse(dataAccess.bookRide(new BookingData("t1", r1, 1, -1)));
     }
 
     @Test
     public void testVlDesk2()
     {
-        assertTrue(dataAccess.bookRide("t1", r1, 1, 0));
+        assertTrue(dataAccess.bookRide(new BookingData("t1", r1, 1, 0)));
     }
 
     @Test
     public void testVlDesk3()
     {
-        assertTrue(dataAccess.bookRide("t1", r1, 1, 1));
+        assertTrue(dataAccess.bookRide(new BookingData("t1", r1, 1, 1)));
     }
 
     @Test
     public void testVlDesk4()
     {
-        assertTrue(dataAccess.bookRide("t1", r1, 1, 24));
+        assertTrue(dataAccess.bookRide(new BookingData("t1", r1, 1, 24)));
     }
 
     @Test
     public void testVlDesk5()
     {
-        assertTrue(dataAccess.bookRide("t1", r1, 1, 25));
+        assertTrue(dataAccess.bookRide(new BookingData("t1", r1, 1, 25)));
     }
 
     @Test
     public void testVlDesk6()
     {
-        assertFalse(dataAccess.bookRide("t1", r1, 1, 26));
+        assertFalse(dataAccess.bookRide(new BookingData("t1", r1, 1, 26)));
     }
 
     @Test
     public void testVlMoney1()
     {
         Mockito.doReturn(Arrays.asList(t4)).when(query).getResultList();
-        assertFalse(dataAccess.bookRide("t4", r1, 1, 2.5));
+        assertFalse(dataAccess.bookRide(new BookingData("t4", r1, 1, 2.5)));
     }
 
     @Test
     public void testVlMoney2()
     {
         Mockito.doReturn(Arrays.asList(t5)).when(query).getResultList();
-        assertTrue(dataAccess.bookRide("t5", r1, 1, 2.5));
+        assertTrue(dataAccess.bookRide(new BookingData("t5", r1, 1, 2.5)));
     }
 
     @Test
     public void testVlMoney3()
     {
         Mockito.doReturn(Arrays.asList(t6)).when(query).getResultList();
-        assertTrue(dataAccess.bookRide("t6", r1, 1, 2.5));
+        assertTrue(dataAccess.bookRide(new BookingData("t6", r1, 1, 2.5)));
     }
 }

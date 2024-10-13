@@ -1,5 +1,6 @@
 package bookRideTest;
 
+import dataAccess.BookingData;
 import dataAccess.DataAccess;
 import domain.Ride;
 import domain.Traveler;
@@ -54,7 +55,7 @@ public class BookRideDBWhiteTest
         Ride rideInexistente = new Ride("A", "B", Date.from(Instant.now()), 5, 20, null);
         try
         {
-            assertFalse(dataAccess.bookRide("t1", rideInexistente, 1, 2.5));
+            assertFalse(dataAccess.bookRide(new BookingData("t1", rideInexistente, 1, 2.5)));
             assertTrue(testDA.getBookings("t1").isEmpty());
         }
         catch (Exception e)
@@ -67,7 +68,7 @@ public class BookRideDBWhiteTest
     @Test
     public void test2()
     {
-        assertFalse(dataAccess.bookRide("traveler que no está en la bd", r1, 1, 2.5));
+        assertFalse(dataAccess.bookRide(new BookingData("traveler que no está en la bd", r1, 1, 2.5)));
         assertTrue(testDA.getBookings("traveler que no está en la bd").isEmpty());
     }
 
@@ -75,7 +76,7 @@ public class BookRideDBWhiteTest
     @Test
     public void test3()
     {
-        assertFalse(dataAccess.bookRide("t1", r1, 5, 2.5));
+        assertFalse(dataAccess.bookRide(new BookingData("t1", r1, 5, 2.5)));
         assertTrue(testDA.getBookings("t1").isEmpty());
     }
 
@@ -83,7 +84,7 @@ public class BookRideDBWhiteTest
     @Test
     public void test4()
     {
-        assertFalse(dataAccess.bookRide("t1", r2, 1, 2.5));
+        assertFalse(dataAccess.bookRide(new BookingData("t1", r2, 1, 2.5)));
         assertTrue(testDA.getBookings("t1").isEmpty());
     }
 
@@ -91,7 +92,7 @@ public class BookRideDBWhiteTest
     @Test
     public void test5()
     {
-        assertTrue(dataAccess.bookRide("t1", r1, 1, 2.5));
+        assertTrue(dataAccess.bookRide(new BookingData("t1", r1, 1, 2.5)));
         assertFalse(testDA.getBookings("t1").isEmpty());
     }
 }
