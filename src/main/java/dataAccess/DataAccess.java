@@ -1,6 +1,5 @@
 package dataAccess;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -219,38 +218,34 @@ public class DataAccess {
 
 	/**
 	 * This method creates a ride for a driver
-	 * 
-	 * @param from        the origin location of a ride
-	 * @param to          the destination location of a ride
-	 * @param date        the date of the ride
-	 * @param nPlaces     available seats
+	 *
 	 * @param driverEmail to which ride is added
-	 * 
+	 * @param rideData
 	 * @return the created ride, or null, or an exception
 	 * @throws RideMustBeLaterThanTodayException if the ride date is before today
 	 * @throws RideAlreadyExistException         if the same ride already exists for
 	 *                                           the driver
 	 */
-	public Ride createRide(String from, String to, Date date, int nPlaces, float price, String driverName)
+	public Ride createRide(RideData rideData)
 			throws RideAlreadyExistException, RideMustBeLaterThanTodayException {
 		logger.info(
-				">> DataAccess: createRide=> from= " + from + " to= " + to + " driver=" + driverName + " date " + date);
-		if (driverName==null) return null;
+				">> DataAccess: createRide=> from= " + rideData.getFrom() + " to= " + rideData.getTo() + " driver=" + rideData.getDriverName() + " date " + rideData.getDate());
+		if (rideData.getDriverName() ==null) return null;
 		try {
-			if (new Date().compareTo(date) > 0) {
+			if (new Date().compareTo(rideData.getDate()) > 0) {
 				logger.info("ppppp");
 				throw new RideMustBeLaterThanTodayException(
 						ResourceBundle.getBundle("Etiquetas").getString("CreateRideGUI.ErrorRideMustBeLaterThanToday"));
 			}
 
 			db.getTransaction().begin();
-			Driver driver = db.find(Driver.class, driverName);
-			if (driver.doesRideExists(from, to, date)) {
+			Driver driver = db.find(Driver.class, rideData.getDriverName());
+			if (driver.doesRideExists(rideData.getFrom(), rideData.getTo(), rideData.getDate())) {
 				db.getTransaction().commit();
 				throw new RideAlreadyExistException(
 						ResourceBundle.getBundle("Etiquetas").getString("DataAccess.RideAlreadyExist"));
 			}
-			Ride ride = driver.addRide(from, to, date, nPlaces, price);
+			Ride ride = driver.addRide(rideData.getFrom(), rideData.getTo(), rideData.getDate(), rideData.getnPlaces(), rideData.getPrice());
 			// next instruction can be obviated
 			db.persist(driver);
 			db.getTransaction().commit();
@@ -361,18 +356,17 @@ public class DataAccess {
 		}
 	}
 
-	public boolean isRegistered(String erab, String passwd) {
-		TypedQuery<Long> travelerQuery = db.createQuery(
-				"SELECT COUNT(t) FROM Traveler t WHERE t.username = :username AND t.passwd = :passwd", Long.class);
-		travelerQuery.setParameter("username", erab);
-		travelerQuery.setParameter("passwd", passwd);
-		Long travelerCount = travelerQuery.getSingleResult();
+	private Long isRegisteredAs(String username, String password, String type)
+	{
+		TypedQuery<Long> travelerQuery = db.createQuery("SELECT COUNT(u) FROM " + type + " u WHERE u.username = :username AND u.passwd = :passwd", Long.class);
+		travelerQuery.setParameter("username", username);
+		travelerQuery.setParameter("passwd", password);
+		return travelerQuery.getSingleResult();
+	}
 
-		TypedQuery<Long> driverQuery = db.createQuery(
-				"SELECT COUNT(d) FROM Driver d WHERE d.username = :username AND d.passwd = :passwd", Long.class);
-		driverQuery.setParameter("username", erab);
-		driverQuery.setParameter("passwd", passwd);
-		Long driverCount = driverQuery.getSingleResult();
+	public boolean isRegistered(String erab, String passwd) {
+		Long travelerCount = isRegisteredAs(erab, passwd, "Traveler");
+		Long driverCount = isRegisteredAs(erab, passwd, "Driver");
 
 		/*TypedQuery<Long> adminQuery = db.createQuery(
 				"SELECT COUNT(a) FROM Admin a WHERE a.username = :username AND a.passwd = :passwd", Long.class);
@@ -532,38 +526,36 @@ public class DataAccess {
 			db.getTransaction().begin();
 
 			Traveler traveler = getTraveler(username);
-			if (traveler == null) {
-				return false;
-			}
+			if (traveler == null || ride.getnPlaces() < seats || traveler.getMoney() < (ride.getPrice() - desk) * seats) return false;
 
-			if (ride.getnPlaces() < seats) {
-				return false;
-			}
-
-			double ridePriceDesk = (ride.getPrice() - desk) * seats;
-			double availableBalance = traveler.getMoney();
-			if (availableBalance < ridePriceDesk) {
-				return false;
-			}
-
-			Booking booking = new Booking(ride, traveler, seats);
-			booking.setTraveler(traveler);
-			booking.setDeskontua(desk);
-			db.persist(booking);
-
-			ride.setnPlaces(ride.getnPlaces() - seats);
-			traveler.addBookedRide(booking);
-			traveler.setMoney(availableBalance - ridePriceDesk);
-			traveler.setIzoztatutakoDirua(traveler.getIzoztatutakoDirua() + ridePriceDesk);
-			db.merge(ride);
-			db.merge(traveler);
-			db.getTransaction().commit();
+			saveBooking(ride, seats, desk, traveler);
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
 			db.getTransaction().rollback();
 			return false;
 		}
+	}
+
+	private boolean canBookRide(Traveler traveler, Ride ride, int seats, double desk)
+	{
+		return (traveler != null && ride.getnPlaces() >= seats && traveler.getMoney() >= (ride.getPrice() - desk) * seats);
+	}
+
+	private void saveBooking(Ride ride, int seats, double desk, Traveler traveler)
+	{
+		Booking booking = new Booking(ride, traveler, seats);
+		booking.setTraveler(traveler);
+		booking.setDeskontua(desk);
+		db.persist(booking);
+
+		ride.setnPlaces(ride.getnPlaces() - seats);
+		traveler.addBookedRide(booking);
+		traveler.setMoney(traveler.getMoney() - (ride.getPrice() - desk) * seats);
+		traveler.setIzoztatutakoDirua(traveler.getIzoztatutakoDirua() + (ride.getPrice() - desk) * seats);
+		db.merge(ride);
+		db.merge(traveler);
+		db.getTransaction().commit();
 	}
 
 	public List<Movement> getAllMovements(User user) {
