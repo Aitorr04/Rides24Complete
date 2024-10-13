@@ -518,41 +518,20 @@ public class DataAccess {
 		}
 	}
 
-
-
-
 	public boolean bookRide(String username, Ride ride, int seats, double desk) {
 		try {
 			db.getTransaction().begin();
 
 			Traveler traveler = getTraveler(username);
-			if (traveler == null || ride.getnPlaces() < seats || traveler.getMoney() < (ride.getPrice() - desk) * seats) {
-				return false;
-			}
+			if (traveler == null || ride.getnPlaces() < seats || traveler.getMoney() < (ride.getPrice() - desk) * seats) return false;
 
-			Booking booking = new Booking(ride, traveler, seats);
-			booking.setTraveler(traveler);
-			booking.setDeskontua(desk);
-			db.persist(booking);
-
-			ride.setnPlaces(ride.getnPlaces() - seats);
-			traveler.addBookedRide(booking);
-			traveler.setMoney(traveler.getMoney() - (ride.getPrice() - desk) * seats);
-			traveler.setIzoztatutakoDirua(traveler.getIzoztatutakoDirua() + (ride.getPrice() - desk) * seats);
-			db.merge(ride);
-			db.merge(traveler);
-			db.getTransaction().commit();
+			saveBooking(ride, seats, desk, traveler);
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
 			db.getTransaction().rollback();
 			return false;
 		}
-	}
-
-	private boolean canBookRide(Traveler traveler, Ride ride, int seats, double desk)
-	{
-		return (traveler != null && ride.getnPlaces() >= seats && traveler.getMoney() >= (ride.getPrice() - desk) * seats);
 	}
 
 	private void saveBooking(Ride ride, int seats, double desk, Traveler traveler)
