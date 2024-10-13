@@ -521,14 +521,14 @@ public class DataAccess {
 
 
 
-	public boolean bookRide(String username, Ride ride, int seats, double desk) {
+	public boolean bookRide(BookRide bookRide) {
 		try {
 			db.getTransaction().begin();
 
-			Traveler traveler = getTraveler(username);
-			if (traveler == null || ride.getnPlaces() < seats || traveler.getMoney() < (ride.getPrice() - desk) * seats) return false;
+			Traveler traveler = getTraveler(bookRide.getUsername());
+			if (traveler == null || bookRide.getRide().getnPlaces() < bookRide.getSeats() || traveler.getMoney() < (bookRide.getRide().getPrice() - bookRide.getDesk()) * bookRide.getSeats()) return false;
 
-			saveBooking(ride, seats, desk, traveler);
+			saveBooking(bookRide.getRide(), bookRide.getSeats(), bookRide.getDesk(), traveler);
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -949,36 +949,19 @@ public class DataAccess {
 	public boolean updateAlertaAurkituak(String username) {
 		try {
 			db.getTransaction().begin();
-
+	
 			boolean alertFound = false;
 			TypedQuery<Alert> alertQuery = db.createQuery("SELECT a FROM Alert a WHERE a.traveler.username = :username",
 					Alert.class);
 			alertQuery.setParameter("username", username);
 			List<Alert> alerts = alertQuery.getResultList();
-
+	
 			TypedQuery<Ride> rideQuery = db
 					.createQuery("SELECT r FROM Ride r WHERE r.date > CURRENT_DATE AND r.active = true", Ride.class);
 			List<Ride> rides = rideQuery.getResultList();
-
-			for (Alert alert : alerts) {
-				boolean found = false;
-				for (Ride ride : rides) {
-					if (UtilDate.datesAreEqualIgnoringTime(ride.getDate(), alert.getDate())
-							&& ride.getFrom().equals(alert.getFrom()) && ride.getTo().equals(alert.getTo())
-							&& ride.getnPlaces() > 0) {
-						alert.setFound(true);
-						found = true;
-						if (alert.isActive())
-							alertFound = true;
-						break;
-					}
-				}
-				if (!found) {
-					alert.setFound(false);
-				}
-				db.merge(alert);
-			}
-
+	
+			alertFound = processAlerts(alerts, rides);
+	
 			db.getTransaction().commit();
 			return alertFound;
 		} catch (Exception e) {
@@ -987,19 +970,30 @@ public class DataAccess {
 			return false;
 		}
 	}
-
-	public boolean createAlert(Alert alert) {
-		try {
-			db.getTransaction().begin();
-			db.persist(alert);
-			db.getTransaction().commit();
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			db.getTransaction().rollback();
-			return false;
+	
+	private boolean processAlerts(List<Alert> alerts, List<Ride> rides) {
+		boolean alertFound = false;
+		for (Alert alert : alerts) {
+			boolean found = false;
+			for (Ride ride : rides) {
+				if (UtilDate.datesAreEqualIgnoringTime(ride.getDate(), alert.getDate())
+						&& ride.getFrom().equals(alert.getFrom()) && ride.getTo().equals(alert.getTo())
+						&& ride.getnPlaces() > 0) {
+					alert.setFound(true);
+					found = true;
+					if (alert.isActive())
+						alertFound = true;
+					break;
+				}
+			}
+			if (!found) {
+				alert.setFound(false);
+			}
+			db.merge(alert);
 		}
+		return alertFound;
 	}
+	
 
 	public boolean deleteAlert(int alertNumber) {
 		try {
