@@ -13,7 +13,6 @@ import static org.junit.Assert.*;
 
 public class BookRideDBBlackTest
 {
-	/*
     static DataAccess dataAccess = new DataAccess();
     //additional operations needed to execute the test
     static TestDataAccess testDA = new TestDataAccess();
@@ -121,7 +120,7 @@ public class BookRideDBBlackTest
         assertTrue(testDA.getBookings("t3").isEmpty());
     }
 
-    //VALORES LÃ�MITE
+    //VALORES LÍMITE
 
     @Test
     public void testVlSeats1()
@@ -206,5 +205,4 @@ public class BookRideDBBlackTest
         assertTrue(dataAccess.bookRide("t6", r1, 1, 2.5));
         assertFalse(testDA.getBookings("t6").isEmpty());
     }
-    */
 }

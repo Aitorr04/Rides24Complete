@@ -20,7 +20,6 @@ import static org.junit.Assert.assertFalse;
 
 public class BookRideMockBlackTest
 {
-	/*
     static DataAccess dataAccess;
     static Traveler t1, t3, t4, t5, t6;
     static Ride r1;
@@ -138,7 +137,7 @@ public class BookRideMockBlackTest
         assertFalse(dataAccess.bookRide("t3", r1, 1, 2.5));
     }
 
-    //VALORES LÃ�MITE
+    //VALORES LÍMITE
 
     @Test
     public void testVlSeats1()
@@ -214,5 +213,4 @@ public class BookRideMockBlackTest
         Mockito.doReturn(Arrays.asList(t6)).when(query).getResultList();
         assertTrue(dataAccess.bookRide("t6", r1, 1, 2.5));
     }
-    */
 }
