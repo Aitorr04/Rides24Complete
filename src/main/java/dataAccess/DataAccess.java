@@ -938,6 +938,20 @@ public class DataAccess {
 
 	}
 
+	public boolean createAlert(Alert alert) {
+		try {
+			db.getTransaction().begin();
+			db.persist(alert);
+			db.getTransaction().commit();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			db.getTransaction().rollback();
+			return false;
+		}
+	}
+
+
 	public boolean updateAlertaAurkituak(String username) {
 		try {
 			db.getTransaction().begin();
