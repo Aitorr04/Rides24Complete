@@ -5,12 +5,12 @@
 	<businessLogicPort>1099</businessLogicPort>
 	<businessLogicName>Rides</businessLogicName>
   </businessLogic>
-  <database local="true" initialize="false">
+  <database local="true" initialize="true">
 	<databaseNode>0.0.0.0</databaseNode>
 	<dbFilename>src/main/resources/rides.temp</dbFilename>
 	<databasePort>6136</databasePort>
 	<user>admin</user>
 	<password>admin</password>
   </database>
-  <locale>eus</locale>
+  <locale>en</locale>
 </config>
