@@ -56,6 +56,10 @@ public class ApplicationLauncher {
 				System.out.println(city);
 			}
 
+			//Adapter
+			DriverTable	dt = new DriverTable(appFacadeInterface.getDriver("Urtzi"));
+			dt.setVisible(true);
+
 		} catch (Exception e) {
 			// a.jLabelSelectOption.setText("Error: "+e.toString());
 			// a.jLabelSelectOption.setForeground(Color.RED);
