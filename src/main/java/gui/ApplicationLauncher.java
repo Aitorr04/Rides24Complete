@@ -8,6 +8,7 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 
 import businesslogic.BusinessLogicFactory;
+import businesslogic.ExtendedIterator;
 import configuration.ConfigXML;
 import dataAccess.DataAccess;
 import businesslogic.BLFacade;
@@ -36,6 +37,25 @@ public class ApplicationLauncher {
 			MainGUI a = new MainGUI();
 			a.setVisible(true);
 
+			//Iterator
+			ExtendedIterator<String> i = appFacadeInterface.getDepartingCitiesIterator();
+			String city;
+			System.out.println("_____________________");
+			System.out.println("FROM	LAST	TO	FIRST");
+			i.goLast();	//	Go	to	last	element
+			while (i.hasPrevious())	{
+				city =	i.previous();
+				System.out.println(city);
+			}
+			System.out.println();
+			System.out.println("_____________________");
+			System.out.println("FROM	FIRST	TO	LAST");
+			i.goFirst();	//	Go	to	first	element
+			while (i.hasNext())	{
+				city =	i.next();
+				System.out.println(city);
+			}
+
 		} catch (Exception e) {
 			// a.jLabelSelectOption.setText("Error: "+e.toString());
 			// a.jLabelSelectOption.setForeground(Color.RED);
@@ -43,7 +63,6 @@ public class ApplicationLauncher {
 			System.out.println("Error in ApplicationLauncher: " + e.toString());
 		}
 		// a.pack();
-
 	}
 
 }
